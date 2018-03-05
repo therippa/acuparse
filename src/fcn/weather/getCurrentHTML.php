@@ -138,72 +138,65 @@ function getCurrentHTML()
                     </ul>
                 </div>
 
-		<!-- ------------------------------------------------------------------ -->
+                <?php
+                    // If tower sensors are active show the tower data
+                    if ($config->station->towers === true) {
 
+                        // Can we display private data?
+                        if (isset($_SESSION['UserLoggedIn']) && $_SESSION['UserLoggedIn'] === true) {
+                            $result = mysqli_query($conn, "SELECT * FROM `towers` ORDER BY `arrange`");
+                        } else {
+                            $result = mysqli_query($conn, "SELECT * FROM `towers` WHERE `private` = 0 ORDER BY `arrange`");
+                        }
 
-<?php
-    // If tower sensors are active show the tower data
-    if ($config->station->towers === true) {
+                        // Is there data to show? If yes, show it.
+                        if (mysqli_num_rows($result) >= 1) { ?>
+                                <div class="row row_tower_data">
+                                    <?php
+                                    $counter = 0;
+                                    while ($row = mysqli_fetch_assoc($result)) {
+                                        $sensor = $row['sensor'];
+                                        $result2 = mysqli_fetch_assoc(mysqli_query($conn,
+                                            "SELECT * FROM `tower_data` WHERE `sensor` = '$sensor' ORDER BY `timestamp` DESC LIMIT 1"));
+                                        $tempF = round($result2['tempF'], 1);
+                                        $tempC = round(($result2['tempF'] - 32) * 5 / 9, 1);
+                                        $relH = $result2['relH'];
 
-        // Can we display private data?
-        if (isset($_SESSION['UserLoggedIn']) && $_SESSION['UserLoggedIn'] === true) {
-            $result = mysqli_query($conn, "SELECT * FROM `towers` ORDER BY `arrange`");
-        } else {
-            $result = mysqli_query($conn, "SELECT * FROM `towers` WHERE `private` = 0 ORDER BY `arrange`");
-        }
+                                        // Temp Trending
+                                        $tempF_trend = trendIcon($GetData->calculateTrend('tempF', 'tower_data', $sensor));
 
-        // Is there data to show? If yes, show it.
-        if (mysqli_num_rows($result) >= 1) { ?>
-                <div class="row row_tower_data">
+                                        // Humidity Trending
+                                        $relH_trend = trendIcon($GetData->calculateTrend('relH', 'tower_data', $sensor));
+
+                                        ?>
+                                            <h3><i class="fa <?= tempIcon($tempC); ?>" aria-hidden="true"></i> Inside Temperature:</h3>
+                                            <h4><?php
+                                                if ($config->site->hide_alternate === 'false' || $config->site->hide_alternate === 'archive') {
+                                                    $tower_temp = ($config->site->imperial === true) ? "$tempF&#8457; ($tempC&#8451;) $tempF_trend" : "$tempC&#8451; ($tempF&#8457;) $tempF_trend";
+                                                } else {
+                                                    $tower_temp = ($config->site->imperial === true) ? "$tempF&#8457; $tempF_trend" : "$tempC&#8451; $tempF_trend";
+                                                }
+                                                echo $tower_temp ?></h4>
+                                            <h3><i class="wi wi-humidity" aria-hidden="true"></i> Inside Humidity:</h3>
+                                            <h4><?= "$relH% $relH_trend"; ?></h4>
+                                            <br/>
+                                            <h6>(Last Updated: <?= date('n/j g:i:sA')?>)</h6>
+                                        <?php
+
+                                        // Apply clearfixes to keep columns in place
+                                        $counter++;
+                                        if ($counter % 2 === 0) {
+                                            echo '<div class="clearfix visible-sm-block"></div>';
+                                        }
+                                        if ($counter % 4 === 0) {
+                                            echo '<div class="clearfix visible-md-block visible-lg-block"></div>';
+                                        }
+                                    }
+                                    ?>
+                                </div>
                     <?php
-                    $counter = 0;
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        $sensor = $row['sensor'];
-                        $result2 = mysqli_fetch_assoc(mysqli_query($conn,
-                            "SELECT * FROM `tower_data` WHERE `sensor` = '$sensor' ORDER BY `timestamp` DESC LIMIT 1"));
-                        $tempF = round($result2['tempF'], 1);
-                        $tempC = round(($result2['tempF'] - 32) * 5 / 9, 1);
-                        $relH = $result2['relH'];
-
-                        // Temp Trending
-                        $tempF_trend = trendIcon($GetData->calculateTrend('tempF', 'tower_data', $sensor));
-
-                        // Humidity Trending
-                        $relH_trend = trendIcon($GetData->calculateTrend('relH', 'tower_data', $sensor));
-
-                        ?>
-                            <h3><i class="fa <?= tempIcon($tempC); ?>" aria-hidden="true"></i> Inside Temperature:</h3>
-                            <h4><?php
-                                if ($config->site->hide_alternate === 'false' || $config->site->hide_alternate === 'archive') {
-                                    $tower_temp = ($config->site->imperial === true) ? "$tempF&#8457; ($tempC&#8451;) $tempF_trend" : "$tempC&#8451; ($tempF&#8457;) $tempF_trend";
-                                } else {
-                                    $tower_temp = ($config->site->imperial === true) ? "$tempF&#8457; $tempF_trend" : "$tempC&#8451; $tempF_trend";
-                                }
-                                echo $tower_temp ?></h4>
-                            <h3><i class="wi wi-humidity" aria-hidden="true"></i> Inside Humidity:</h3>
-                            <h4><?= "$relH% $relH_trend"; ?></h4>
-                            <br/>
-                            <h6>(Last Updated: <?= date('n/j g:i:sA')?>)</h6>
-                        <?php
-
-                        // Apply clearfixes to keep columns in place
-                        $counter++;
-                        if ($counter % 2 === 0) {
-                            echo '<div class="clearfix visible-sm-block"></div>';
                         }
-                        if ($counter % 4 === 0) {
-                            echo '<div class="clearfix visible-md-block visible-lg-block"></div>';
-                        }
-                    }
-                    ?>
-	    </div>
-<?php
-        }
-    }?>
-
-
-
-
+                    }?>
                 <!-- Wind Data -->
             </div> <!-- END Left Column -->
 
