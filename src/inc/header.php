@@ -34,6 +34,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.5">
     <meta name="description" content="<?= $config->site->desc; ?>">
     <meta name="keywords" content="weather">
+    <meta http-equiv="refresh" content="3600">
     <title><?= $page_title ?></title>
 
     <!-- CSS -->

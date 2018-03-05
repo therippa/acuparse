@@ -60,7 +60,8 @@ $utc_date = gmdate("Y-m-d+H:i:s");
 
 // Make sure new data is being sent
 $result = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM `archive` ORDER BY `reported` DESC LIMIT 1"));
-if (($result['tempF'] != $data->tempF) || ($result['windSmph'] != $data->windSmph) || ($result['windDEG'] != $data->windDEG) || ($result['relH'] != $data->relH) || ($result['pressureinHg'] != $data->pressure_inHg)) {
+//if (($result['tempF'] != $data->tempF) || ($result['windSmph'] != $data->windSmph) || ($result['windDEG'] != $data->windDEG) || ($result['relH'] != $data->relH) || ($result['pressureinHg'] != $data->pressure_inHg)) {
+if (1 === 1) {
     // New Data, proceed
 
     // Save to DB
@@ -138,7 +139,8 @@ if (($result['tempF'] != $data->tempF) || ($result['windSmph'] != $data->windSmp
         $count = mysqli_num_rows(mysqli_query($conn, $sql));
 
         // Make sure update interval has passed since last update
-        if ((strtotime($result['timestamp']) < strtotime("-" . $config->upload->cwop->interval)) OR ($count == 0)) {
+        //if ((strtotime($result['timestamp']) < strtotime("-" . $config->upload->cwop->interval)) OR ($count == 0)) {
+        if (1 === 1) {
             // Process and send update
             $cwop_date = gmdate("dHi", time());
             $relH = $data->relH;

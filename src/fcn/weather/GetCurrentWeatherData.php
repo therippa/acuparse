@@ -392,7 +392,8 @@ class GetCurrentWeatherData
             'rainIN' => $this->rainIN,
             'rainMM' => $this->rainMM,
             'rainTotalIN_today' => $this->rainTotalIN_today,
-            'rainTotalMM_today' => $this->rainTotalMM_today
+            'rainTotalMM_today' => $this->rainTotalMM_today,
+            'jasobake' => 'test'
         );
     }
 }
