@@ -66,8 +66,8 @@ function getCurrentHTML()
     // Get Sun Data
     $zenith = 90 + (50 / 60);
     $offset = date('Z') / 3600;
-    $sunrise = gmdate('g:iA', date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $config->site->lat, $config->site->long, $zenith, $offset));
-    $sunset = gmdate('g:iA', date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $config->site->lat, $config->site->long, $zenith, $offset));
+    $sunrise = date('g:iA', date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $config->site->lat, $config->site->long, $zenith, $offset));
+    $sunset = date('g:iA', date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $config->site->lat, $config->site->long, $zenith, $offset));
 
     ?>
     <section id="weather_data">
