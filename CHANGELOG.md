@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [[2.4.0]](https://www.acuparse.com/releases/v2-4-0/) - 2018-05-07
+### Added
+- Ability to select which readings to store and use for Barometer readings.
+
+### Changed
+- Minor code formatting.
+- Minor tweaks to the placement of some options in settings.
+- Moon icon updates.
+
+## [[2.3.2-beta]](https://www.acuparse.com/releases/v2-3-2-beta/) - 2018-05-06
+### Changed
+- Bumped jQuery datetimepicker to 2.5.19.
+- Bumped jQuery to 3.3.1.
+- Font Awesome to 5.0.12 and icon updates.
+- Lightbox to v2.10.0.
+- Installer and general security fixes.
+
+## [[2.3.1]](https://www.acuparse.com/releases/v2-3-1/) - 2018-04-27
+### Changed
+- Findu does not play nice with https at the moment. Forcing nav link to be http.
+- External updates will use the proper appname when building update packets.
+
+## [[2.3.0]](https://www.acuparse.com/releases/v2-3-0/) - 2018-04-07
+### Added
+- Ability to set a Tower as the source for Temp/Humidity when sending updates externally/archiving.
+
+### Changed
+- Minor formatting and documentation updates.
+
+## [[2.2.3]](https://www.acuparse.com/releases/v2-2-3/) - 2018-04-03
+### Changed
+- Tower sensors now support the indoor/outdoor monitors for temp/humidity readings.
+- Admin settings formatting.
+- Minor formatting and documentation updates.
+
 ## [[2.2.2]](https://www.acuparse.com/releases/v2-2-2/) - 2018-02-26
 ### Added
 - Timezone to Access response.

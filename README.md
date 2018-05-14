@@ -2,8 +2,6 @@
 ## AcuRite®‎ Access/smartHUB and IP Camera Data Processing, Display, and Upload.
 ### See it in action @ [ghwx.ca](https://www.ghwx.ca)
 
-> **Upgrading from Version 2.1?**  Apache config needs to be rebuilt with SSL support. See [docs/updates/from2_1.md](docs/updates/from2_1.md)
-
 Acuparse is a PHP/MySQL program that captures, stores, and displays weather data from an AcuRite®‎ 5n1 weather station and tower sensors, via your Access/smartHUB. It uploads weather data to Weather Underground, PWS Weather, and CWOP. It also processes and stores images from a local network camera for display and uploads to Weather Underground.
 
 Built for weather geeks and designed to be clean, simple, and mobile friendly. It uses a minimal UI with a focus on data, not flashy graphics. Designed to compliment MyAcuRite and other 3rd party's sites and tools. 
@@ -15,7 +13,7 @@ Users currently having trouble sending updates to Weather Underground should fin
 # Features:
 * **Your weather data belongs to you, stored on your OWN server.**
 * Showcase live camera images and send them to Weather Underground.
-* Uploads weather data to external providers.
+* Uploads weather data from your 5N1 or a Tower/5N1 to external providers.
 * Customize barometer readings.
 * Display data in both &#8457; and &#8451;. Selectable default.
 * Multiple tower sensors, public or private.
@@ -34,12 +32,9 @@ Users currently having trouble sending updates to Weather Underground should fin
     * Reports can be run against the database. Open issues for custom report requests and tag them with the reports tag. phpMyAdmin is an excellent tool for advanced manual reporting on your station.
 * Charts and Graphing.
     * Since this is available at most external weather sites.
-* Multiple Access/smartHUB/5n1 sensors and ability to choose which sensor uploads externally.
-    * The current framework is centred around one Access/smartHUB with a single 5n1 sensor.
-    Version 2 will continue using the single Access/smartHUB model. With the development of Version 3 centring around support for the Access and Atlas sensors. 
-    The ability to customise the sensor data sent to external sites will also get added. Since support for multiple sensors requires a profound restructuring, it is unknown if there will be an upgrade path to Version 3, from 2.
-    Please keep that in mind when planning your long-term data archiving. The core focus with any data migration between version 2.X and 3.X will be the archive data. Community feedback will mostly drive the development of version 3.X and any migration paths.
-
+* Multiple Access/smartHUB/5n1 sensors
+    * The current framework is built around a single Access/smartHUB and 5n1 sensor. 
+   
 # Installation:
 **Requires LAMP stack. Some PHP, Apache, and GNU/Linux experience recommended.**
 > **Note:** If you are not using an Access, you will need to setup a DNS redirect using a DNS server on your local network. 
@@ -68,6 +63,11 @@ Detailed upgrade instructions for significant releases will be published in the 
 
     ``` cd /opt/acuparse && sudo git pull ```
 * Connect to your site to complete the update.
+
+# Donations:
+If you like Acuparse, you can support my work and the project by buying me a coffee!
+
+<a href="https://www.buymeacoffee.com/maxp" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
 # Licencing:
 Acuparse is open-source software. Released with an AGPL-3.0+ license. It also uses several other open source scripts. Their licences included where available.

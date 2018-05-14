@@ -53,20 +53,40 @@ if ($_GET['sensor'] === $config->station->sensor_5n1) {
             filter_input(INPUT_GET, 'dailyrainin', FILTER_SANITIZE_STRING));
 
         // Add readings to database
-        mysqli_multi_query($conn,
-            "INSERT INTO `pressure` (`inhg`) VALUES ('$baromin');
+
+        // Check if Baro. readings are enabled or not
+        if ($config->station->baro_source !== 2) { // Baro. readings not disabled.
+            mysqli_multi_query($conn,
+                "INSERT INTO `pressure` (`inhg`) VALUES ('$baromin');
                     INSERT INTO `windspeed` (`speedMPH`) VALUES ('$windspeedmph');
                     INSERT INTO `winddirection` (`degrees`) VALUES ('$wind_direction');
                     UPDATE `rainfall` SET `rainin`='$rainin';
                     INSERT INTO `dailyrain` (`dailyrainin`, `date`) VALUES ('$dailyrainin', '$rain_date') ON DUPLICATE KEY UPDATE `dailyrainin`='$dailyrainin'");
-        while (mysqli_next_result($conn)) {
-            ;
-        };
+            while (mysqli_next_result($conn)) {
+                ;
+            };
 
-        // Log it
-        if ($config->debug->logging === true) {
-            syslog(LOG_DEBUG,
-                "(HUB)[5N1]: Wind = $wind_direction @ $windspeedmph | Rain = $rainin | DailyRain = $dailyrainin | Pressure = $baromin");
+            // Log it
+            if ($config->debug->logging === true) {
+                syslog(LOG_DEBUG,
+                    "(HUB)[5N1]: Wind = $wind_direction @ $windspeedmph | Rain = $rainin | DailyRain = $dailyrainin | Pressure = $baromin");
+            }
+
+        } else { // Baro. readings disabled
+            mysqli_multi_query($conn,
+                "INSERT INTO `windspeed` (`speedMPH`) VALUES ('$windspeedmph');
+                    INSERT INTO `winddirection` (`degrees`) VALUES ('$wind_direction');
+                    UPDATE `rainfall` SET `rainin`='$rainin';
+                    INSERT INTO `dailyrain` (`dailyrainin`, `date`) VALUES ('$dailyrainin', '$rain_date') ON DUPLICATE KEY UPDATE `dailyrainin`='$dailyrainin'");
+            while (mysqli_next_result($conn)) {
+                ;
+            };
+
+            // Log it
+            if ($config->debug->logging === true) {
+                syslog(LOG_DEBUG,
+                    "(HUB)[5N1]: Wind = $wind_direction @ $windspeedmph | Rain = $rainin | DailyRain = $dailyrainin | Pressure (DISABLED) = $baromin");
+            }
         }
     } // Process Wind Speed, Temperature, Humidity
     elseif ($_GET['mt'] === '5N1x38') {
@@ -89,25 +109,44 @@ if ($_GET['sensor'] === $config->station->sensor_5n1) {
         $humidity = (int)mysqli_real_escape_string($conn,
             filter_input(INPUT_GET, 'humidity', FILTER_SANITIZE_STRING));
 
-        // Insert into DB
-        mysqli_multi_query($conn,
-            "INSERT INTO `pressure` (`inhg`) VALUES ('$baromin');
+        // Add readings to database
+
+        // Check if Baro. readings are enabled or not
+        if ($config->station->baro_source !== 2) { // Baro. readings not disabled.
+            mysqli_multi_query($conn,
+                "INSERT INTO `pressure` (`inhg`) VALUES ('$baromin');
                     INSERT INTO `windspeed` (`speedMPH`) VALUES ('$windspeedmph');
                     INSERT INTO `temperature` (`tempF`) VALUES ('$tempF');
                     INSERT INTO `humidity` (`relH`) VALUES ('$humidity')");
-        while (mysqli_next_result($conn)) {
-            ;
-        };
+            while (mysqli_next_result($conn)) {
+                ;
+            };
 
-        // Log it
-        if ($config->debug->logging === true) {
             // Log it
-            syslog(LOG_DEBUG,
-                "(HUB)[5N1]: TempF = $tempF | relH = $humidity | Windspeed = $windspeedmph | Pressure = $baromin");
+            if ($config->debug->logging === true) {
+                // Log it
+                syslog(LOG_DEBUG,
+                    "(HUB)[5N1]: TempF = $tempF | relH = $humidity | Windspeed = $windspeedmph | Pressure = $baromin");
+            }
+        } else { // Baro. readings disabled
+            mysqli_multi_query($conn,
+                "INSERT INTO `windspeed` (`speedMPH`) VALUES ('$windspeedmph');
+                    INSERT INTO `temperature` (`tempF`) VALUES ('$tempF');
+                    INSERT INTO `humidity` (`relH`) VALUES ('$humidity')");
+            while (mysqli_next_result($conn)) {
+                ;
+            };
+
+            // Log it
+            if ($config->debug->logging === true) {
+                // Log it
+                syslog(LOG_DEBUG,
+                    "(HUB)[5N1]: TempF = $tempF | relH = $humidity | Windspeed = $windspeedmph | Pressure (DISABLED) = $baromin");
+            }
         }
     }
 } // Process Tower Sensors
-elseif ($config->station->towers === true && $_GET['mt'] === 'tower') {
+elseif ($config->station->towers === true && ($_GET['mt'] === 'tower' || $_GET['mt'] === 'ProOut' || $_GET['mt'] === 'ProIn')) {
 
     // Tower ID
     $tower_id = mysqli_real_escape_string($conn, filter_input(INPUT_GET, 'sensor', FILTER_SANITIZE_NUMBER_INT));
@@ -119,12 +158,20 @@ elseif ($config->station->towers === true && $_GET['mt'] === 'tower') {
         $result = mysqli_fetch_array(mysqli_query($conn, $sql));
         $tower_name = $result['name'];
 
-        // Temperature
-        $tempF = (float)mysqli_real_escape_string($conn, filter_input(INPUT_GET, 'tempf', FILTER_SANITIZE_STRING));
+        // ProIn Specific Variables
+        if ($_GET['mt'] === 'ProIn') {
+            $tempF = (float)mysqli_real_escape_string($conn,
+                filter_input(INPUT_GET, 'indoortempf', FILTER_SANITIZE_STRING));
+            $humidity = (int)mysqli_real_escape_string($conn,
+                filter_input(INPUT_GET, 'indoorhumidity', FILTER_SANITIZE_STRING));
+        } else {
+            // Temperature
+            $tempF = (float)mysqli_real_escape_string($conn, filter_input(INPUT_GET, 'tempf', FILTER_SANITIZE_STRING));
 
-        // Humidity
-        $humidity = (int)mysqli_real_escape_string($conn,
-            filter_input(INPUT_GET, 'humidity', FILTER_SANITIZE_STRING));
+            // Humidity
+            $humidity = (int)mysqli_real_escape_string($conn,
+                filter_input(INPUT_GET, 'humidity', FILTER_SANITIZE_STRING));
+        }
 
         // Insert into DB
         mysqli_query($conn,

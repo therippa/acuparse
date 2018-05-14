@@ -46,8 +46,8 @@ if ($config->google->analytics->enabled === true) { ?>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
             i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
             a = s.createElement(o),
                 m = s.getElementsByTagName(o)[0];
             a.async = 1;
@@ -59,7 +59,7 @@ if ($config->google->analytics->enabled === true) { ?>
         ga('send', 'pageview');
     </script>
 <?php } ?>
-<script type="text/javascript" src="/lib/mit/jquery/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/lib/mit/jquery/js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="/lib/mit/bootstrap/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {

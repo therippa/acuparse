@@ -78,7 +78,7 @@ function getCurrentHTML()
 
                 <!-- Temperature Data -->
                 <div class="row row_temperature_data">
-                    <h2><i class="fa <?= tempIcon($wx->tempC); ?>" aria-hidden="true"></i> Temperature:</h2>
+                    <h2><i class="fas <?= tempIcon($wx->tempC); ?>" aria-hidden="true"></i> Temperature:</h2>
                     <h4><?php
                         if ($config->site->hide_alternate === 'false' || $config->site->hide_alternate === 'archive') {
                             $temp = ($config->site->imperial === true) ? "$wx->tempF&#8457; ($wx->tempC&#8451;)" : "$wx->tempC&#8451; ($wx->tempF&#8457;)";
@@ -310,14 +310,81 @@ function getCurrentHTML()
                             <li><i class="wi wi-moonset" aria-hidden="true"></i>
                                 <strong>Moonset:</strong> <?= $moon_set; ?></li>
                         <?php } ?>
-                        <li><strong>Current New:</strong> <?= $last_new_moon; ?></li>
-                        <li><strong>Current Full:</strong> <?= $last_full_moon; ?></li>
-                        <li><strong>Next New:</strong> <?= $next_new_moon; ?></li>
-                        <li><strong>Next Full:</strong> <?= $next_full_moon; ?></li>
+                        <li><i class="wi wi-moon-new" aria-hidden="true"></i> <strong>Latest
+                                New:</strong> <?= $last_new_moon; ?></li>
+                        <li><i class="wi wi-moon-full" aria-hidden="true"></i> <strong>Latest
+                                Full:</strong> <?= $last_full_moon; ?></li>
+                        <li><i class="wi wi-moon-new" aria-hidden="true"></i> <strong>Upcoming
+                                New:</strong> <?= $next_new_moon; ?></li>
+                        <li><i class="wi wi-moon-full" aria-hidden="true"></i> <strong>Upcoming
+                                Full:</strong> <?= $next_full_moon; ?></li>
                     </ul>
                 </div> <!-- END Moon -->
             </div> <!-- END Right Column -->
         </div>
     </section>
     <?php
+
+    // If tower sensors are active show the tower data
+    if ($config->station->towers === true) {
+
+        // Can we display private data?
+        if (isset($_SESSION['UserLoggedIn']) && $_SESSION['UserLoggedIn'] === true) {
+            $result = mysqli_query($conn, "SELECT * FROM `towers` ORDER BY `arrange`");
+        } else {
+            $result = mysqli_query($conn, "SELECT * FROM `towers` WHERE `private` = 0 ORDER BY `arrange`");
+        }
+
+        // Is there data to show? If yes, show it.
+        if (mysqli_num_rows($result) >= 1) { ?>
+            <hr class="hr-dashed">
+            <section id="tower_data">
+                <div class="row row_tower_data">
+                    <?php
+                    $counter = 0;
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $sensor = $row['sensor'];
+                        $result2 = mysqli_fetch_assoc(mysqli_query($conn,
+                            "SELECT * FROM `tower_data` WHERE `sensor` = '$sensor' ORDER BY `timestamp` DESC LIMIT 1"));
+                        $tempF = round($result2['tempF'], 1);
+                        $tempC = round(($result2['tempF'] - 32) * 5 / 9, 1);
+                        $relH = $result2['relH'];
+
+                        // Temp Trending
+                        $tempF_trend = trendIcon($GetData->calculateTrend('tempF', 'tower_data', $sensor));
+
+                        // Humidity Trending
+                        $relH_trend = trendIcon($GetData->calculateTrend('relH', 'tower_data', $sensor));
+
+                        ?>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12"> <!-- 1/4th Column -->
+                            <h2 class="panel-heading"><?= $row['name']; ?>:</h2>
+                            <h3><i class="fas <?= tempIcon($tempC); ?>" aria-hidden="true"></i> Temperature:</h3>
+                            <h4><?php
+                                if ($config->site->hide_alternate === 'false' || $config->site->hide_alternate === 'archive') {
+                                    $tower_temp = ($config->site->imperial === true) ? "$tempF&#8457; ($tempC&#8451;) $tempF_trend" : "$tempC&#8451; ($tempF&#8457;) $tempF_trend";
+                                } else {
+                                    $tower_temp = ($config->site->imperial === true) ? "$tempF&#8457; $tempF_trend" : "$tempC&#8451; $tempF_trend";
+                                }
+                                echo $tower_temp ?></h4>
+                            <h3><i class="wi wi-humidity" aria-hidden="true"></i> Humidity:</h3>
+                            <h4><?= "$relH% $relH_trend"; ?></h4>
+                        </div> <!-- END 1/4th Column -->
+                        <?php
+
+                        // Apply clearfixes to keep columns in place
+                        $counter++;
+                        if ($counter % 2 === 0) {
+                            echo '<div class="clearfix visible-sm-block"></div>';
+                        }
+                        if ($counter % 4 === 0) {
+                            echo '<div class="clearfix visible-md-block visible-lg-block"></div>';
+                        }
+                    }
+                    ?>
+                </div>
+            </section>
+            <?php
+        }
+    }
 }
